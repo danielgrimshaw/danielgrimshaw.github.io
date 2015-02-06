@@ -31,6 +31,7 @@ puts "</h2>
 		<li><a href=""python.py"">Python</a></li>
 		<li><a href=""perl.pl"">Perl</a></li>
 		<li><a class=""active"" href=""ruby.rb"">ruby</a></li>
+		<li><a href="Quantum">Quantum-Oscilators</a></li>
 	</ul>    
 </nav>
 <footer>
