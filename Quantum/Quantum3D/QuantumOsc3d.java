@@ -20,17 +20,20 @@ import java.awt.event.*;
 
 class QuantumOsc3dCanvas extends Canvas {
     QuantumOsc3dFrame pg;
+    
     QuantumOsc3dCanvas(QuantumOsc3dFrame p) {
-	pg = p;
+	    pg = p;
     }
     public Dimension getPreferredSize() {
-	return new Dimension(300,400);
+	    return new Dimension(300,400);
     }
+    
     public void update(Graphics g) {
-	pg.updateQuantumOsc3d(g);
+	    pg.updateQuantumOsc3d(g);
     }
+    
     public void paint(Graphics g) {
-	pg.updateQuantumOsc3d(g);
+	    pg.updateQuantumOsc3d(g);
     }
 };
 
@@ -38,64 +41,67 @@ class QuantumOsc3dLayout implements LayoutManager {
     public QuantumOsc3dLayout() {}
     public void addLayoutComponent(String name, Component c) {}
     public void removeLayoutComponent(Component c) {}
+    
     public Dimension preferredLayoutSize(Container target) {
-	return new Dimension(500, 500);
+	    return new Dimension(500, 500);
     }
     public Dimension minimumLayoutSize(Container target) {
-	return new Dimension(100,100);
+	    return new Dimension(100,100);
     }
     public void layoutContainer(Container target) {
-	int barwidth = 0;
-	int i;
-	for (i = 1; i < target.getComponentCount(); i++) {
-	    Component m = target.getComponent(i);
-	    if (m.isVisible()) {
-		Dimension d = m.getPreferredSize();
-		if (d.width > barwidth)
-		    barwidth = d.width;
+	    int barwidth = 0;
+	    int i;
+	    for (i = 1; i < target.getComponentCount(); i++) {
+	        Component m = target.getComponent(i);
+	        if (m.isVisible()) {
+		        Dimension d = m.getPreferredSize();
+    		    if (d.width > barwidth)
+	    	        barwidth = d.width;
+	        }
 	    }
-	}
-	Insets insets = target.insets();
-	int targetw = target.size().width - insets.left - insets.right;
-	int cw = targetw-barwidth;
-	int targeth = target.size().height - (insets.top+insets.bottom);
-	target.getComponent(0).move(insets.left, insets.top);
-	target.getComponent(0).resize(cw, targeth);
-	cw += insets.left;
-	int h = insets.top;
-	for (i = 1; i < target.getComponentCount(); i++) {
-	    Component m = target.getComponent(i);
-	    if (m.isVisible()) {
-		Dimension d = m.getPreferredSize();
-		if (m instanceof Scrollbar)
-		    d.width = barwidth;
-		if (m instanceof Label) {
-		    h += d.height/5;
-		    d.width = barwidth;
-		}
-		m.move(cw, h);
-		m.resize(d.width, d.height);
-		h += d.height;
+	    Insets insets = target.insets();
+	    int targetw = target.size().width - insets.left - insets.right;
+	    int cw = targetw-barwidth;
+	    int targeth = target.size().height - (insets.top+insets.bottom);
+	    target.getComponent(0).move(insets.left, insets.top);
+	    target.getComponent(0).resize(cw, targeth);
+	    cw += insets.left;
+	    int h = insets.top;
+	    for (i = 1; i < target.getComponentCount(); i++) {
+	        Component m = target.getComponent(i);
+	        if (m.isVisible()) {
+		        Dimension d = m.getPreferredSize();
+		        if (m instanceof Scrollbar)
+		            d.width = barwidth;
+		        if (m instanceof Label) {
+		            h += d.height/5;
+		            d.width = barwidth;
+		        }
+		        m.move(cw, h);
+		        m.resize(d.width, d.height);
+		        h += d.height;
+	        }
 	    }
-	}
     }
 };
 
 public class QuantumOsc3d extends Applet {
     QuantumOsc3dFrame oc;
     void destroyFrame() {
-	if (oc != null) 
-	    oc.dispose();
-	oc = null;
+	    if (oc != null) 
+	        oc.dispose();
+	    oc = null;
     }
+    
     public void init() {
-	oc = new QuantumOsc3dFrame(this);
-	oc.init();
+	    oc = new QuantumOsc3dFrame(this);
+	    oc.init();
     }
+    
     public void destroy() {
-	if (oc != null)
-	    oc.dispose();
-	oc = null;
+	    if (oc != null)
+	        oc.dispose();
+	    oc = null;
     }
 };
 
@@ -113,7 +119,7 @@ class QuantumOsc3dFrame extends Frame
     int gridSizeY = 200;
     
     public String getAppletInfo() {
-	return "QuantumOsc3d by Daniel Grimshaw";
+	    return "QuantumOsc3d by Daniel Grimshaw";
     }
 
     Button blankButton;
@@ -236,909 +242,904 @@ class QuantumOsc3dFrame extends Frame
     FontMetrics fontMetrics;
 
     int getrand(int x) {
-	int q = random.nextInt();
-	if (q < 0) q = -q;
-	return q % x;
+	    int q = random.nextInt();
+	    if (q < 0) q = -q;
+	        return q % x;
     }
+    
     QuantumOsc3dCanvas cv;
 
     QuantumOsc3dFrame(QuantumOsc3d a) {
-	super("3-D Quantum Oscillator Viewer");
-	applet = a;
+	    super("3-D Quantum Oscillator Viewer");
+	    applet = a;
     }
 
     public void init() {
-	gray2 = new Color(127, 127, 127);
+	    gray2 = new Color(127, 127, 127);
 
-	String os = System.getProperty("os.name");
-	String jv = System.getProperty("java.version");
-	boolean altRender = false;
-	int res = 50;
-	// change settings to speed things up where possible
-	if (os.indexOf("Windows") == 0) {
-	    res = 75;
-	    if (jv.indexOf("1.1") == 0)
-		altRender = true;
-	}
+	    String os = System.getProperty("os.name");
+	    String jv = System.getProperty("java.version");
+	    boolean altRender = false;
+	    int res = 50;
+	    // change settings to speed things up where possible
+	    if (os.indexOf("Windows") == 0) {
+	        res = 75;
+	        if (jv.indexOf("1.1") == 0)
+		        altRender = true;
+	    }
 
-	setLayout(new QuantumOsc3dLayout());
-	cv = new QuantumOsc3dCanvas(this);
-	cv.addComponentListener(this);
-	cv.addMouseMotionListener(this);
-	cv.addMouseListener(this);
-	add(cv);
+	    setLayout(new QuantumOsc3dLayout());
+	    cv = new QuantumOsc3dCanvas(this);
+	    cv.addComponentListener(this);
+	    cv.addMouseMotionListener(this);
+	    cv.addMouseListener(this);
+	    add(cv);
 
-	MenuBar mb = new MenuBar();
-	Menu m = new Menu("File");
-	mb.add(m);
-	m.add(exitItem = getMenuItem("Exit"));
-	m = new Menu("View");
-	mb.add(m);
-	m.add(eCheckItem = getCheckItem("Energy"));
-	eCheckItem.setState(true);
-	m.add(xCheckItem = getCheckItem("Position"));
-	xCheckItem.setState(true);
-	xCheckItem.disable();
-	m.add(lCheckItem = getCheckItem("Angular Momentum"));
-	m.addSeparator();
-	m.add(colorCheck = getCheckItem("Phase as Color"));
-	colorCheck.setState(true);
+	    MenuBar mb = new MenuBar();
+	    Menu m = new Menu("File");
+	    mb.add(m);
+	    m.add(exitItem = getMenuItem("Exit"));
+	    m = new Menu("View");
+	    mb.add(m);
+	    m.add(eCheckItem = getCheckItem("Energy"));
+	    eCheckItem.setState(true);
+	    m.add(xCheckItem = getCheckItem("Position"));
+	    xCheckItem.setState(true);
+	    xCheckItem.disable();
+	    m.add(lCheckItem = getCheckItem("Angular Momentum"));
+	    m.addSeparator();
+	    m.add(colorCheck = getCheckItem("Phase as Color"));
+	    colorCheck.setState(true);
+	    
+	    measureMenu = m = new Menu("Measure");
+	    mb.add(m);
+	    m.add(measureEItem = getMenuItem("Measure Energy"));
+	    m.add(measureLxItem = getMenuItem("Measure Lx"));
+	    m.add(measureLyItem = getMenuItem("Measure Ly"));
+	    m.add(measureLzItem = getMenuItem("Measure Lz"));
+	    setMenuBar(mb);
 
-	measureMenu = m = new Menu("Measure");
-	mb.add(m);
-	m.add(measureEItem = getMenuItem("Measure Energy"));
-	m.add(measureLxItem = getMenuItem("Measure Lx"));
-	m.add(measureLyItem = getMenuItem("Measure Ly"));
-	m.add(measureLzItem = getMenuItem("Measure Lz"));
-	setMenuBar(mb);
+	    m = new Menu("Options");
+	    mb.add(m);
+	    alwaysNormItem = getCheckItem("Always Normalize");
+	    m.add(axesItem = getCheckItem("Show Axes"));
+	    axesItem.setState(true);
+	    m.add(autoZoomItem = getCheckItem("Auto Scale"));
+	    autoZoomItem.setState(true);
+	    m.add(animatedZoomItem = getCheckItem("Animated Scaling"));
+	    animatedZoomItem.setState(true);
 
-	m = new Menu("Options");
-	mb.add(m);
-	alwaysNormItem = getCheckItem("Always Normalize");
-	m.add(axesItem = getCheckItem("Show Axes"));
-	axesItem.setState(true);
-	m.add(autoZoomItem = getCheckItem("Auto Scale"));
-	autoZoomItem.setState(true);
-	m.add(animatedZoomItem = getCheckItem("Animated Scaling"));
-	animatedZoomItem.setState(true);
+	    presetsMenu = m = new Menu("Presets");
+	    mb.add(m);
+	    m.add(dispGaussItem = getMenuItem("Displaced Gaussian"));
+	    m.add(scaled1GaussItem = getMenuItem("Scaled Gaussian 1"));
+	    m.add(scaled2GaussItem = getMenuItem("Scaled Gaussian 2"));
+	    m.add(rotatingGaussItem = getMenuItem("Rotating Gaussian"));
+	    m.add(dispX110Item = getMenuItem("1,0,1 Displaced X"));
+	    m.add(dispZ110Item = getMenuItem("1,0,0 Displaced Z"));
 
-	presetsMenu = m = new Menu("Presets");
-	mb.add(m);
-	m.add(dispGaussItem = getMenuItem("Displaced Gaussian"));
-	m.add(scaled1GaussItem = getMenuItem("Scaled Gaussian 1"));
-	m.add(scaled2GaussItem = getMenuItem("Scaled Gaussian 2"));
-	m.add(rotatingGaussItem = getMenuItem("Rotating Gaussian"));
-	m.add(dispX110Item = getMenuItem("1,0,1 Displaced X"));
-	m.add(dispZ110Item = getMenuItem("1,0,0 Displaced Z"));
-
-	setMenuBar(mb);
+    	setMenuBar(mb);
 	
-	viewChooser = new Choice();
-	viewChooser.add("Single Wave Functions");
-	viewChooser.add("Combinations");
-	viewChooser.add("Rectangular Combos");
-	viewChooser.add("Multiple Bases (n=1)");
-	viewChooser.add("Multiple Bases (n=2)");
-	viewChooser.add("Multiple Bases (n=3)");
-	viewChooser.add("Multiple Bases (n=4)");
-	viewChooser.addItemListener(this);
-	add(viewChooser);
+	    viewChooser = new Choice();
+	    viewChooser.add("Single Wave Functions");
+	    viewChooser.add("Combinations");
+	    viewChooser.add("Rectangular Combos");
+	    viewChooser.add("Multiple Bases (n=1)");
+	    viewChooser.add("Multiple Bases (n=2)");
+	    viewChooser.add("Multiple Bases (n=3)");
+	    viewChooser.add("Multiple Bases (n=4)");
+	    viewChooser.addItemListener(this);
+	    add(viewChooser);
 	
-	int i;
-	nChooser = new Choice();
-	for (i = 0; i <= maxnr; i++)
-	    nChooser.add("nr = " + i);
-	nChooser.addItemListener(this);
-	add(nChooser);
-	nChooser.select(0);
+	    int i;
+	    nChooser = new Choice();
+	    for (i = 0; i <= maxnr; i++)
+    	    nChooser.add("nr = " + i);
+	    nChooser.addItemListener(this);
+	    add(nChooser);
+	    nChooser.select(0);
 	
-	lChooser = new Choice();
-	for (i = 0; i <= maxl; i++)
-	    lChooser.add("l = " + i +
-			 ((i < 6) ? " (" + codeLetter[i] + ")" : ""));
-	lChooser.addItemListener(this);
-	add(lChooser);
+	    lChooser = new Choice();
+	    for (i = 0; i <= maxl; i++)
+	        lChooser.add("l = " + i + ((i < 6) ? " (" + codeLetter[i] + ")" : ""));
+	    lChooser.addItemListener(this);
+	    add(lChooser);
 	
-	mChooser = new Choice();
-	mChooser.addItemListener(this);
-	add(mChooser);
+	    mChooser = new Choice();
+	    mChooser.addItemListener(this);
+	    add(mChooser);
 	
-	sliceChooser = new Choice();
-	sliceChooser.add("No Slicing");
-	sliceChooser.add("Show X Slice");
-	sliceChooser.add("Show Y Slice");
-	sliceChooser.add("Show Z Slice");
-	sliceChooser.addItemListener(this);
-	add(sliceChooser);
+	    sliceChooser = new Choice();
+	    sliceChooser.add("No Slicing");
+	    sliceChooser.add("Show X Slice");
+	    sliceChooser.add("Show Y Slice");
+	    sliceChooser.add("Show Z Slice");
+	    sliceChooser.addItemListener(this);
+	    add(sliceChooser);
 
-	modeChooser = new Choice();
-	modeChooser.add("Mouse = Adjust View");
-	modeChooser.add("Mouse = Rotate X");
-	modeChooser.add("Mouse = Rotate Y");
-	modeChooser.add("Mouse = Rotate Z");
-	modeChooser.addItemListener(this);
-	add(modeChooser);
+	    modeChooser = new Choice();
+	    modeChooser.add("Mouse = Adjust View");
+	    modeChooser.add("Mouse = Rotate X");
+	    modeChooser.add("Mouse = Rotate Y");
+	    modeChooser.add("Mouse = Rotate Z");
+	    modeChooser.addItemListener(this);
+	    add(modeChooser);
 	
-	stoppedCheck = new Checkbox("Stopped");
-	stoppedCheck.addItemListener(this);
-	add(stoppedCheck);
+	    stoppedCheck = new Checkbox("Stopped");
+	    stoppedCheck.addItemListener(this);
+	    add(stoppedCheck);
 
-	add(blankButton = new Button("Clear"));
-	blankButton.addActionListener(this);
-	add(normalizeButton = new Button("Normalize"));
-	normalizeButton.addActionListener(this);
-	add(maximizeButton = new Button("Maximize"));
-	maximizeButton.addActionListener(this);
+	    add(blankButton = new Button("Clear"));
+	    blankButton.addActionListener(this);
+	    add(normalizeButton = new Button("Normalize"));
+	    normalizeButton.addActionListener(this);
+	    add(maximizeButton = new Button("Maximize"));
+	    maximizeButton.addActionListener(this);
 
-	lChooser.select(3);
-	setLValue();
+	    lChooser.select(3);
+	    setLValue();
 
-	memoryImageSourceCheck = new Checkbox("Alternate Rendering",
-					      altRender);
-	memoryImageSourceCheck.addItemListener(this);
-	add(memoryImageSourceCheck);
+	    memoryImageSourceCheck = new Checkbox("Alternate Rendering", altRender);
+	    memoryImageSourceCheck.addItemListener(this);
+	    add(memoryImageSourceCheck);
 
-	add(new Label("Simulation Speed", Label.CENTER));
-	add(speedBar = new Scrollbar(Scrollbar.HORIZONTAL, 20, 1, 1, 200));
-	speedBar.addAdjustmentListener(this);
+	    add(new Label("Simulation Speed", Label.CENTER));
+	    add(speedBar = new Scrollbar(Scrollbar.HORIZONTAL, 20, 1, 1, 200));
+	    speedBar.addAdjustmentListener(this);
 
-	add(new Label("Brightness", Label.CENTER));
-	add(brightnessBar = new Scrollbar(Scrollbar.HORIZONTAL, 240,
-					  1, 1, 4000));
-	brightnessBar.addAdjustmentListener(this);
+	    add(new Label("Brightness", Label.CENTER));
+	    add(brightnessBar = new Scrollbar(Scrollbar.HORIZONTAL, 240, 1, 1, 4000));
+	    brightnessBar.addAdjustmentListener(this);
 
-	add(new Label("Image Resolution", Label.CENTER));
-	add(resolutionBar =
-	    new Scrollbar(Scrollbar.HORIZONTAL, res, 2, 20, 200));
-	resolutionBar.addAdjustmentListener(this);
+	    add(new Label("Image Resolution", Label.CENTER));
+	    add(resolutionBar = new Scrollbar(Scrollbar.HORIZONTAL, res, 2, 20, 200));
+	    resolutionBar.addAdjustmentListener(this);
 
-	/*add(new Label("Internal Resolution", Label.CENTER));
-	add(internalResBar =
-	    new Scrollbar(Scrollbar.HORIZONTAL, res, 2, 20, 200));
+	    /*add(new Label("Internal Resolution", Label.CENTER));
+	    add(internalResBar = new Scrollbar(Scrollbar.HORIZONTAL, res, 2, 20, 200));
 	    internalResBar.addAdjustmentListener(this);*/
 
-	add(new Label("Scale", Label.CENTER));
-	add(scaleBar = new Scrollbar(Scrollbar.HORIZONTAL, 75, 1, 5, 1620));
-	scaleBar.addAdjustmentListener(this);
+	    add(new Label("Scale", Label.CENTER));
+	    add(scaleBar = new Scrollbar(Scrollbar.HORIZONTAL, 75, 1, 5, 1620));
+	    scaleBar.addAdjustmentListener(this);
 
-	/*add(new Label("Samples", Label.CENTER));
-	add(sampleBar = new Scrollbar(Scrollbar.HORIZONTAL, 7, 1, 0, 20));
-	sampleBar.addAdjustmentListener(this);*/
+	    /*add(new Label("Samples", Label.CENTER));
+	    add(sampleBar = new Scrollbar(Scrollbar.HORIZONTAL, 7, 1, 0, 20));
+	    sampleBar.addAdjustmentListener(this);*/
 
-	try {
-	    String param = applet.getParameter("PAUSE");
-	    if (param != null)
-		pause = Integer.parseInt(param);
-	} catch (Exception e) { }
+	    try {
+	        String param = applet.getParameter("PAUSE");
+	        if (param != null)
+		        pause = Integer.parseInt(param);
+	    } catch (Exception e) { }
 
-	int j;
-	phaseColors = new PhaseColor[8][phaseColorCount+1];
-	for (i = 0; i != 8; i++)
-	    for (j = 0; j <= phaseColorCount; j++) {
-		double ang = java.lang.Math.atan(j/(double) phaseColorCount);
-		phaseColors[i][j] = genPhaseColor(i, ang);
-	    }
+	    int j;
+	    phaseColors = new PhaseColor[8][phaseColorCount+1];
+	    for (i = 0; i != 8; i++)
+	        for (j = 0; j <= phaseColorCount; j++) {
+		        double ang = java.lang.Math.atan(j/(double) phaseColorCount);
+		        phaseColors[i][j] = genPhaseColor(i, ang);
+	        }
 	
-	slicerPoints = new int[2][5*2];
-	sliceFaces = new double[4][3];
+	    slicerPoints = new int[2][5*2];
+	    sliceFaces = new double[4][3];
 
-	rotmatrix = new double[9];
-	rotmatrix[0] = rotmatrix[4] = rotmatrix[8] = 1;
-	rotate(0, -pi/2);
-	xpoints = new int[4];
-	ypoints = new int[4];
+	    rotmatrix = new double[9];
+	    rotmatrix[0] = rotmatrix[4] = rotmatrix[8] = 1;
+	    rotate(0, -pi/2);
+	    xpoints = new int[4];
+	    ypoints = new int[4];
 
-	setupSimpson();
-	setupStates();
+	    setupSimpson();
+	    setupStates();
 
-	random = new Random();
-	reinit();
-	orbitalChanged();
-	cv.setBackground(Color.black);
-	cv.setForeground(Color.white);
-	resize(480, 450);
-	handleResize();
-	show();
+	    random = new Random();
+	    reinit();
+	    orbitalChanged();
+	    cv.setBackground(Color.black);
+	    cv.setForeground(Color.white);
+	    resize(480, 450);
+	    handleResize();
+	    show();
     }
 
     static final int maxnr = 11;
     static final int maxl  = 10;
 
     void setupStates() {
-	stateCount = (maxnr+1) * ((maxl+1)*(maxl+1));
-	int i;
-	states = new BasisState[stateCount];
-	int nr = 0;
-	int l = 0;
-	int m = 0;
-	for (i = 0; i != stateCount; i++) {
-	    BasisState bs = states[i] = new BasisState();
-	    bs.elevel = 2*nr+l+1.5;
-	    bs.nr = nr;
-	    bs.l = l;
-	    bs.m = m;
-	    bs.n = 2*nr+l;
-	    if (m < l)
-		m++;
-	    else {
-		l++;
-		if (l <= maxl)
-		    m = -l;
-		else {
-		    nr++;
-		    l = m = 0;
-		}
+	    stateCount = (maxnr+1) * ((maxl+1)*(maxl+1));
+	    int i;
+	    states = new BasisState[stateCount];
+	    int nr = 0;
+	    int l = 0;
+	    int m = 0;
+	    for (i = 0; i != stateCount; i++) {
+    	    BasisState bs = states[i] = new BasisState();
+	        bs.elevel = 2*nr+l+1.5;
+	        bs.nr = nr;
+	        bs.l = l;
+	        bs.m = m;
+	        bs.n = 2*nr+l;
+	        if (m < l)
+		        m++;
+	        else {
+		        l++;
+		        if (l <= maxl)
+		            m = -l;
+		        else {
+		            nr++;
+		            l = m = 0;
+		        }
+	        }
 	    }
-	}
 
-	basisList = new AlternateBasis[17];
-	basisCount = 0;
+	    basisList = new AlternateBasis[17];
+	    basisCount = 0;
 
-	rectBasis = setupRectBasis();
-	lxBasis = initBasis(35, true);
-	setupLBasis(lxBasis, 0, 0, true, l0Array);
-	setupLBasis(lxBasis, 0, 1, true, l1xArray);
-	setupLBasis(lxBasis, 0, 2, true, l2xArray);
-	setupLBasis(lxBasis, 0, 3, true, l3xArray);
-	setupLBasis(lxBasis, 0, 4, true, l4xArray);
-	setupLBasis(lxBasis, 1, 0, true, l0Array);
-	setupLBasis(lxBasis, 1, 1, true, l1xArray);
-	setupLBasis(lxBasis, 1, 2, true, l2xArray);
-	setupLBasis(lxBasis, 2, 0, true, l0Array);
-	lyBasis = initBasis(35, true);
-	setupLBasis(lyBasis, 0, 0, false, l0Array);
-	setupLBasis(lyBasis, 0, 1, false, l1yArray);
-	setupLBasis(lyBasis, 0, 2, false, l2yArray);
-	setupLBasis(lyBasis, 0, 3, false, l3yArray);
-	setupLBasis(lyBasis, 0, 4, false, l4yArray);
-	setupLBasis(lyBasis, 1, 0, false, l0Array);
-	setupLBasis(lyBasis, 1, 1, false, l1yArray);
-	setupLBasis(lyBasis, 1, 2, false, l2yArray);
-	setupLBasis(lyBasis, 2, 0, false, l0Array);
+	    rectBasis = setupRectBasis();
+	    lxBasis = initBasis(35, true);
+	    setupLBasis(lxBasis, 0, 0, true, l0Array);
+	    setupLBasis(lxBasis, 0, 1, true, l1xArray);
+	    setupLBasis(lxBasis, 0, 2, true, l2xArray);
+	    setupLBasis(lxBasis, 0, 3, true, l3xArray);
+	    setupLBasis(lxBasis, 0, 4, true, l4xArray);
+	    setupLBasis(lxBasis, 1, 0, true, l0Array);
+	    setupLBasis(lxBasis, 1, 1, true, l1xArray);
+	    setupLBasis(lxBasis, 1, 2, true, l2xArray);
+	    setupLBasis(lxBasis, 2, 0, true, l0Array);
+	    lyBasis = initBasis(35, true);
+	    setupLBasis(lyBasis, 0, 0, false, l0Array);
+	    setupLBasis(lyBasis, 0, 1, false, l1yArray);
+	    setupLBasis(lyBasis, 0, 2, false, l2yArray);
+	    setupLBasis(lyBasis, 0, 3, false, l3yArray);
+	    setupLBasis(lyBasis, 0, 4, false, l4yArray);
+	    setupLBasis(lyBasis, 1, 0, false, l0Array);
+	    setupLBasis(lyBasis, 1, 1, false, l1yArray);
+	    setupLBasis(lyBasis, 1, 2, false, l2yArray);
+	    setupLBasis(lyBasis, 2, 0, false, l0Array);
     }
 
     AlternateBasis initBasis(int sct, boolean xAxis) {
-	AlternateBasis basis = new AlternateBasis();
-	basis.xAxis = xAxis;
-	basis.altStates = new DerivedState[sct];
-	basis.altStateCount = 0;
-	return basis;
+	    AlternateBasis basis = new AlternateBasis();
+	    basis.xAxis = xAxis;
+	    basis.altStates = new DerivedState[sct];
+	    basis.altStateCount = 0;
+	    return basis;
     }
 
-    void setupLBasis(AlternateBasis basis,
-		     int nr, int l, boolean xAxis, double arr[]) {
-	String mtext = (xAxis) ? "mx" : "my";
-	int i;
-	int lct = l*2+1;
-	int ap = 0;
-	for (i = 0; i != lct; i++) {
-	    int sn = basis.altStateCount++;
-	    DerivedState ds = basis.altStates[sn] = new DerivedState();
-	    ds.basis = basis;
-	    ds.count = lct;
-	    ds.bstates = new BasisState[lct];
-	    ds.coefs = new Complex[lct];
-	    ds.m = i-l;
-	    ds.l = l;
-	    ds.nr = nr;
-	    ds.n = 2*nr+l;
-	    ds.elevel = 2*nr+l+1.5;
-	    int j;
-	    for (j = 0; j != lct; j++) {
-		ds.bstates[j] = getState(nr, l, j-l);
-		ds.coefs[j] = new Complex();
+    void setupLBasis(AlternateBasis basis, int nr, int l, boolean xAxis, double arr[]) {
+	    String mtext = (xAxis) ? "mx" : "my";
+	    int i;
+	    int lct = l*2+1;
+	    int ap = 0;
+	    for (i = 0; i != lct; i++) {
+    	    int sn = basis.altStateCount++;
+	        DerivedState ds = basis.altStates[sn] = new DerivedState();
+	        ds.basis = basis;
+	        ds.count = lct;
+	        ds.bstates = new BasisState[lct];
+	        ds.coefs = new Complex[lct];
+	        ds.m = i-l;
+	        ds.l = l;
+	        ds.nr = nr;
+	        ds.n = 2*nr+l;
+	        ds.elevel = 2*nr+l+1.5;
+	        int j;
+	        for (j = 0; j != lct; j++) {
+		        ds.bstates[j] = getState(nr, l, j-l);
+		        ds.coefs[j] = new Complex();
+	        }
+	        ds.text = "n = " + ds.n + ", nr = " + nr + ", l = " + l + ", " +
+		    mtext + " = " + ds.m;
+	        for (j = 0; j != lct; j++) {
+		        ds.coefs[j].set(arr[ap], arr[ap+1]);
+		        ap += 2;
+	        }
 	    }
-	    ds.text = "n = " + ds.n + ", nr = " + nr + ", l = " + l + ", " +
-		mtext + " = " + ds.m;
-	    for (j = 0; j != lct; j++) {
-		ds.coefs[j].set(arr[ap], arr[ap+1]);
-		ap += 2;
-	    }
-	}
     }
 
     AlternateBasis setupRectBasis() {
-	int sct = 35;
-	AlternateBasis basis = new AlternateBasis();
-	basis.altStates = new DerivedState[sct];
-	basis.altStateCount = sct;
-	int i;
-	int nx = 0, ny = 0, nz = 0;
-	int ap = 0;
-	for (i = 0; i != sct; i++) {
-	    int n = nx+ny+nz;
-	    int n21 = n/2+1;
-	    int l = ((n & 1) == 0) ? 0 : 1;
-	    int nr = n/2;
-	    int m = -l;
-	    DerivedState ds = basis.altStates[i] = new DerivedState();
-	    ds.basis = basis;
-	    ds.count = (l == 0) ? 2*n21*n21-n21 : 2*n21*n21+n21;
-	    ds.bstates = new BasisState[sct];
-	    ds.coefs = new Complex[sct];
-	    ds.text = "nx = " + nx + ", ny = " + ny + ", nz = " + nz;
-	    ds.nx = nx; ds.ny = ny; ds.nz = nz;
-	    ds.n = n;
-	    ds.elevel = 2*nr+l+1.5;
-	    int j;
-	    for (j = 0; j != ds.count; j++) {
-		ds.bstates[j] = getState(nr, l, m);
-		ds.coefs[j] =
-		    new Complex(rectArrayR[ap], rectArrayI[ap]);
-		ap++;
-		if (m++ == l) {
-		    l += 2;
-		    nr--;
-		    m = -l;
-		}
+	    int sct = 35;
+	    AlternateBasis basis = new AlternateBasis();
+	    basis.altStates = new DerivedState[sct];
+	    basis.altStateCount = sct;
+	    int i;
+	    int nx = 0, ny = 0, nz = 0;
+	    int ap = 0;
+	    for (i = 0; i != sct; i++) {
+	        int n = nx+ny+nz;
+	        int n21 = n/2+1;
+	        int l = ((n & 1) == 0) ? 0 : 1;
+	        int nr = n/2;
+	        int m = -l;
+	        DerivedState ds = basis.altStates[i] = new DerivedState();
+	        ds.basis = basis;
+	        ds.count = (l == 0) ? 2*n21*n21-n21 : 2*n21*n21+n21;
+	        ds.bstates = new BasisState[sct];
+	        ds.coefs = new Complex[sct];
+	        ds.text = "nx = " + nx + ", ny = " + ny + ", nz = " + nz;
+	        ds.nx = nx; ds.ny = ny; ds.nz = nz;
+	        ds.n = n;
+	        ds.elevel = 2*nr+l+1.5;
+	        int j;
+	        for (j = 0; j != ds.count; j++) {
+		        ds.bstates[j] = getState(nr, l, m);
+		        ds.coefs[j] = new Complex(rectArrayR[ap], rectArrayI[ap]);
+		        ap++;
+		        if (m++ == l) {
+		            l += 2;
+		            nr--;
+		            m = -l;
+		        }
+	        }
+	        if (i == sct-1)
+		        break;
+	        do {
+		        nz++;
+		        if (nz > 4) {
+		            nz = 0;
+		            nx++;
+		            if (nx > 4) {
+			            nx = 0;
+			            ny++;
+		            }
+		        }
+	        } while (nx+ny+nz > 4);
 	    }
-	    if (i == sct-1)
-		break;
-	    do {
-		nz++;
-		if (nz > 4) {
-		    nz = 0;
-		    nx++;
-		    if (nx > 4) {
-			nx = 0;
-			ny++;
-		    }
-		}
-	    } while (nx+ny+nz > 4);
-	}
-	return basis;
+	    return basis;
     }
 
     // Lx and Ly eigenvectors for various values of l, expressed in
     // terms of Lz eigenvectors
     double l0Array[] = {1, 0};
-    double l1xArray[] = { .5, 0, -root2inv, 0, .5, 0, root2inv, 0, 0, 0,
-			  -root2inv, 0, .5, 0, root2inv, 0, .5, 0 };
-    double l1yArray[] = { .5, 0, 0, -root2inv, -.5, 0, 0, -root2inv,
-			  0, 0, 0, -root2inv, .5, 0, 0, root2inv, -.5, 0 };
+    double l1xArray[] = { .5, 0, -root2inv, 0, .5, 0, root2inv, 0, 0, 0, -root2inv, 0, .5, 0, root2inv, 0, .5, 0 };
+    double l1yArray[] = { .5, 0, 0, -root2inv, -.5, 0, 0, -root2inv, 0, 0, 0, -root2inv, .5, 0, 0, root2inv, -.5, 0 };
     static final double root6by4 = .61237243569579452454;
     double l2xArray[] = {
-	1/4., 0, -1/2., 0, root6by4, 0, -1/2., 0, 1/4., 0,
-	-.5, 0, .5, 0, 0, 0, -.5, 0, .5, 0,
-	root6by4, 0, 0, 0, -.5, 0, 0, 0, root6by4, 0,
-	-.5, 0, -.5, 0, 0, 0, .5, 0, .5, 0,
-	1/4., 0, 1/2., 0, root6by4, 0, 1/2., 0, 1/4., 0
+	    1/4., 0, -1/2., 0, root6by4, 0, -1/2., 0, 1/4., 0,
+	    -.5, 0, .5, 0, 0, 0, -.5, 0, .5, 0,
+	    root6by4, 0, 0, 0, -.5, 0, 0, 0, root6by4, 0,
+	    -.5, 0, -.5, 0, 0, 0, .5, 0, .5, 0,
+	    1/4., 0, 1/2., 0, root6by4, 0, 1/2., 0, 1/4., 0
     };
     double l2yArray[] = {
-	1/4., 0, 0, -1/2., -root6by4, 0, 0, 1/2., 1/4., 0,
-	-.5,  0, 0, .5, 0, 0, 0,      .5,       .5, 0,
-	-root6by4, 0, 0, 0, -.5, 0, 0, 0, -root6by4, 0,
-	-.5, 0, 0, -.5, 0, 0, 0, -.5, .5, 0,
-	1/4., 0, 0,  1/2., -root6by4, 0, 0, -1/2., 1/4., 0
+	    1/4., 0, 0, -1/2., -root6by4, 0, 0, 1/2., 1/4., 0,
+	    -.5,  0, 0, .5, 0, 0, 0,      .5,       .5, 0,
+	    -root6by4, 0, 0, 0, -.5, 0, 0, 0, -root6by4, 0,
+	    -.5, 0, 0, -.5, 0, 0, 0, -.5, .5, 0,
+	    1/4., 0, 0,  1/2., -root6by4, 0, 0, -1/2., 1/4., 0
     };
     double l3xArray[] = {
-	0.125,0, -0.306186,0, 0.484123,0, -0.559017,0,
-	  0.484123,0, -0.306186,0, 0.125,0,
-	-0.306186,0, 0.5,0, -0.395285,0, 0.,0,
-	  0.395285,0, -0.5,0, 0.306186,0,
-	0.484123,0, -0.395285,0, -0.125,0, 0.433013,0,
-	  -0.125,0, -0.395285,0, 0.4841230,0,
-	0.559017,0, 0.,0, -0.433013,0, 0.,0, 
-	  0.433013,0, 0.,0, -0.559017,0,
-	0.484123,0, 0.395285,0, -0.125,0, -0.433013,0,
-	  -0.125,0, 0.395285,0, 0.484123,0,
-	-0.306186,0, -0.5,0, -0.395285,0, 0.,0,
-	  0.395285,0, 0.5,0, 0.306186,0,
-	0.125,0, 0.306186,0, 0.484123,0, 0.559017,0,
-	  0.484123,0, 0.306186,0, 0.125,0
+	    0.125,0, -0.306186,0, 0.484123,0, -0.559017,0,
+	    0.484123,0, -0.306186,0, 0.125,0,
+	    -0.306186,0, 0.5,0, -0.395285,0, 0.,0,
+	    0.395285,0, -0.5,0, 0.306186,0,
+	    0.484123,0, -0.395285,0, -0.125,0, 0.433013,0,
+	    -0.125,0, -0.395285,0, 0.4841230,0,
+	    0.559017,0, 0.,0, -0.433013,0, 0.,0, 
+	    0.433013,0, 0.,0, -0.559017,0,
+	    0.484123,0, 0.395285,0, -0.125,0, -0.433013,0,
+	    -0.125,0, 0.395285,0, 0.484123,0,
+	    -0.306186,0, -0.5,0, -0.395285,0, 0.,0,
+	    0.395285,0, 0.5,0, 0.306186,0,
+	    0.125,0, 0.306186,0, 0.484123,0, 0.559017,0,
+	    0.484123,0, 0.306186,0, 0.125,0
     };
     double l3yArray[] = {
-	-0.125,0, 0,0.306186, 0.484123,0, 0,-0.559017,
-	  -0.484123,0, 0,0.306186, 0.125,0,
-	0.306186,0, 0,-0.5, -0.395285,0, 0.,0,
-	  -0.395285,0, 0,0.5, 0.306186,0,
-	-0.484123,0, 0,0.395285, -0.125,0, 0,0.433013,
-	  0.125,0, 0,0.395285, 0.484123,0,
-	0,0.559017, 0.,0, 0,0.433013, 0.,0,
-	  0,0.433013, 0.,0, 0,0.559017,
-	-0.484123,0, 0,-0.395285, -0.125,0, 0,-0.433013,
-	  0.125,0, 0,-0.395285, 0.484123,0,
-	0.306186,0, 0,+0.5, -0.395285,0, 0.,0, -0.395285,0,
-	  0,-0.5, 0.306186,0,
-	-0.125,0, 0,-0.306186, 0.484123,0, 0,+0.559017,
-	  -0.484123,0, 0,-0.306186, 0.125,0
+	    -0.125,0, 0,0.306186, 0.484123,0, 0,-0.559017,
+	    -0.484123,0, 0,0.306186, 0.125,0,
+	    0.306186,0, 0,-0.5, -0.395285,0, 0.,0,
+	    -0.395285,0, 0,0.5, 0.306186,0,
+	    -0.484123,0, 0,0.395285, -0.125,0, 0,0.433013,
+	    0.125,0, 0,0.395285, 0.484123,0,
+	    0,0.559017, 0.,0, 0,0.433013, 0.,0,
+	    0,0.433013, 0.,0, 0,0.559017,
+	    -0.484123,0, 0,-0.395285, -0.125,0, 0,-0.433013,
+	    0.125,0, 0,-0.395285, 0.484123,0,
+	    0.306186,0, 0,+0.5, -0.395285,0, 0.,0, -0.395285,0,
+	    0,-0.5, 0.306186,0,
+	    -0.125,0, 0,-0.306186, 0.484123,0, 0,+0.559017,
+	    -0.484123,0, 0,-0.306186, 0.125,0
     };
     double l4xArray[] = {
-	0.0625, 0., -0.176777, 0., 0.330719, 0., -0.467707,
-	0., 0.522913, 0., -0.467707, 0., 0.330719, 0., -0.176777,
-	0., 0.0625, 0., -0.176777, 0., 0.375, 0., -0.467707, 0.,
-	0.330719, 0., 0., 0., -0.330719, 0., 0.467707, 0., -0.375,
-	0., 0.176777, 0., 0.330719, 0., -0.467707, 0., 0.25,
-	0., 0.176777, 0., -0.395285, 0., 0.176777, 0., 0.25, 0.,
-	-0.467707, 0., 0.330719, 0., -0.467707, 0., 0.330719, 0.,
-	0.176777, 0., -0.375, 0., 0., 0., 0.375, 0., -0.176777,
-	0., -0.330719, 0., 0.467707, 0., 0.522913, 0., 0., 0.,
-	-0.395285, 0., 0., 0., 0.375, 0., 0., 0., -0.395285,
-	0., 0., 0., 0.522913, 0., -0.467707, 0., -0.330719, 0.,
-	0.176777, 0., 0.375, 0., 0., 0., -0.375, 0., -0.176777,
-	0., 0.330719, 0., 0.467707, 0., 0.330719, 0., 0.467707,
-	0., 0.25, 0., -0.176777, 0., -0.395285, 0., -0.176777,
-	0., 0.25, 0., 0.467707, 0., 0.330719, 0., -0.176777, 0.,
-	-0.375, 0., -0.467707, 0., -0.330719, 0., 0., 0., 0.330719,
-	0., 0.467707, 0., 0.375, 0., 0.176777, 0., 0.0625, 0.,
-	0.176777, 0., 0.330719, 0., 0.467707, 0., 0.522913, 0.,
-	0.467707, 0., 0.330719, 0., 0.176777, 0., 0.0625, 0.
+	    0.0625, 0., -0.176777, 0., 0.330719, 0., -0.467707,
+	    0., 0.522913, 0., -0.467707, 0., 0.330719, 0., -0.176777,
+	    0., 0.0625, 0., -0.176777, 0., 0.375, 0., -0.467707, 0.,
+	    0.330719, 0., 0., 0., -0.330719, 0., 0.467707, 0., -0.375,
+	    0., 0.176777, 0., 0.330719, 0., -0.467707, 0., 0.25,
+	    0., 0.176777, 0., -0.395285, 0., 0.176777, 0., 0.25, 0.,
+	    -0.467707, 0., 0.330719, 0., -0.467707, 0., 0.330719, 0.,
+	    0.176777, 0., -0.375, 0., 0., 0., 0.375, 0., -0.176777,
+    	0., -0.330719, 0., 0.467707, 0., 0.522913, 0., 0., 0.,
+	    -0.395285, 0., 0., 0., 0.375, 0., 0., 0., -0.395285,
+	    0., 0., 0., 0.522913, 0., -0.467707, 0., -0.330719, 0.,
+	    0.176777, 0., 0.375, 0., 0., 0., -0.375, 0., -0.176777,
+	    0., 0.330719, 0., 0.467707, 0., 0.330719, 0., 0.467707,
+	    0., 0.25, 0., -0.176777, 0., -0.395285, 0., -0.176777,
+	    0., 0.25, 0., 0.467707, 0., 0.330719, 0., -0.176777, 0.,
+	    -0.375, 0., -0.467707, 0., -0.330719, 0., 0., 0., 0.330719,
+	    0., 0.467707, 0., 0.375, 0., 0.176777, 0., 0.0625, 0.,
+	    0.176777, 0., 0.330719, 0., 0.467707, 0., 0.522913, 0.,
+	    0.467707, 0., 0.330719, 0., 0.176777, 0., 0.0625, 0.
     };
     double l4yArray[] = {
-	0.0625, 0., 0., -0.176777, -0.330719, 0., 0., 0.467707,
-	0.522913, 0., 0., -0.467707, -0.330719, 0., 0., 0.176777,
-	0.0625, 0., -0.176777, 0., 0., 0.375, 0.467707, 0., 0.,
-	-0.330719, 0., 0., 0., -0.330719, -0.467707, 0., 0.,
-	0.375, 0.176777, 0., 0.330719, 0., 0., -0.467707, -0.25,
-	0., 0., -0.176777, -0.395285, 0., 0., 0.176777, -0.25, 0.,
-	0., 0.467707, 0.330719, 0., -0.467707, 0., 0., 0.330719,
-	-0.176777, 0., 0., 0.375, 0., 0., 0., 0.375, 0.176777,
-	0., 0., 0.330719, 0.467707, 0., 0.522913, 0., 0., 0.,
-	0.395285, 0., 0., 0., 0.375, 0., 0., 0., 0.395285, 0., 0.,
-	0., 0.522913, 0., -0.467707, 0., 0., -0.330719, -0.176777,
-	0., 0., -0.375, 0., 0., 0., -0.375, 0.176777, 0., 0.,
-	-0.330719, 0.467707, 0., 0.330719, 0., 0., 0.467707,
-	-0.25, 0., 0., 0.176777, -0.395285, 0., 0., -0.176777,
-	-0.25, 0., 0., -0.467707, 0.330719, 0., -0.176777, 0., 0.,
-	-0.375, 0.467707, 0., 0., 0.330719, 0., 0., 0., 0.330719,
-	-0.467707, 0., 0., -0.375, 0.176777, 0., 0.0625, 0., 0.,
-	0.176777, -0.330719, 0., 0., -0.467707, 0.522913, 0., 0.,
-	0.467707, -0.330719, 0., 0., -0.176777, 0.0625, 0.
+	    0.0625, 0., 0., -0.176777, -0.330719, 0., 0., 0.467707,
+	    0.522913, 0., 0., -0.467707, -0.330719, 0., 0., 0.176777,
+	    0.0625, 0., -0.176777, 0., 0., 0.375, 0.467707, 0., 0.,
+	    -0.330719, 0., 0., 0., -0.330719, -0.467707, 0., 0.,
+	    0.375, 0.176777, 0., 0.330719, 0., 0., -0.467707, -0.25,
+	    0., 0., -0.176777, -0.395285, 0., 0., 0.176777, -0.25, 0.,
+	    0., 0.467707, 0.330719, 0., -0.467707, 0., 0., 0.330719,
+	    -0.176777, 0., 0., 0.375, 0., 0., 0., 0.375, 0.176777,
+	    0., 0., 0.330719, 0.467707, 0., 0.522913, 0., 0., 0.,
+	    0.395285, 0., 0., 0., 0.375, 0., 0., 0., 0.395285, 0., 0.,
+	    0., 0.522913, 0., -0.467707, 0., 0., -0.330719, -0.176777,
+	    0., 0., -0.375, 0., 0., 0., -0.375, 0.176777, 0., 0.,
+	    -0.330719, 0.467707, 0., 0.330719, 0., 0., 0.467707,
+	    -0.25, 0., 0., 0.176777, -0.395285, 0., 0., -0.176777,
+	    -0.25, 0., 0., -0.467707, 0.330719, 0., -0.176777, 0., 0.,
+	    -0.375, 0.467707, 0., 0., 0.330719, 0., 0., 0., 0.330719,
+	    -0.467707, 0., 0., -0.375, 0.176777, 0., 0.0625, 0., 0.,
+	    0.176777, -0.330719, 0., 0., -0.467707, 0.522913, 0., 0.,
+	    0.467707, -0.330719, 0., 0., -0.176777, 0.0625, 0.
     };
 
     // precomputed using brute-force mathematica code
     double rectArrayR[] = {
-	1.,0.,1.,0.,-0.57735,0.,0.,0.816497,0.,0.,0.,-0.774597,0.,0.,0.,
-	0.,0.632456,0.,0.,0.,0.447214,0.,0.,-0.755929,0.,0.,0.,0.,0.,0.,
-	0.478091,0.,0.,0.,0.,0.707107,0.,-0.707107,0.,0.,0.707107,0.,
-	-0.707107,0.,-0.316228,0.,0.316228,0.,0.,0.632456,0.,-0.632456,
-	0.,0.,0.,0.,-0.46291,0.,0.46291,0.,0.,0.,0.,0.534522,0.,
-	-0.534522,0.,0.,0.,-0.57735,0.5,0.,-0.408248,0.,0.5,0.,
-	-0.447214,0.,0.,0.5,0.,-0.547723,0.,0.5,0.,0.365148,-0.188982,0.,
-	-0.154303,0.,-0.188982,0.,0.,0.46291,0.,-0.58554,0.,0.46291,0.,0.,
-	-0.547723,0.,0.547723,0.353553,0.,-0.273861,0.,0.273861,0.,
-	-0.353553,0.,0.,-0.46291,0.,0.46291,0.,0.,0.353553,0.,-0.400892,
-	0.,0.400892,0.,-0.353553,0.,0.447214,-0.46291,0.,0.377964,0.,
-	-0.46291,0.25,0.,-0.188982,0.,0.179284,0.,-0.188982,0.,0.25,0.,
-	0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
-	0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
-	0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
-	0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
-	0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
-	-0.57735,-0.5,0.,-0.408248,0.,-0.5,0.,-0.447214,0.,0.,-0.5,0.,
-	-0.547723,0.,-0.5,0.,0.365148,0.188982,0.,-0.154303,0.,0.188982,
-	0.,0.,-0.46291,0.,-0.58554,0.,-0.46291,0.,0.,-0.316228,0.,0.316228,
-	-0.612372,0.,-0.158114,0.,0.158114,0.,0.612372,0.,0.,
-	-0.267261,0.,0.267261,0.,0.,-0.612372,0.,-0.231455,0.,
-	0.231455,0.,0.612372,0.,0.365148,0.,0.,0.308607,0.,0.,
-	-0.612372,0.,0.,0.,0.146385,0.,0.,0.,-0.612372,0.,0.,0.,0.,0.,0.,
-	0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
-	0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.447214,0.46291,0.,
-	0.377964,0.,0.46291,0.25,0.,0.188982,0.,0.179284,0.,0.188982,0.,0.25
+	    1.,0.,1.,0.,-0.57735,0.,0.,0.816497,0.,0.,0.,-0.774597,0.,0.,0.,
+	    0.,0.632456,0.,0.,0.,0.447214,0.,0.,-0.755929,0.,0.,0.,0.,0.,0.,
+	    0.478091,0.,0.,0.,0.,0.707107,0.,-0.707107,0.,0.,0.707107,0.,
+	    -0.707107,0.,-0.316228,0.,0.316228,0.,0.,0.632456,0.,-0.632456,
+	    0.,0.,0.,0.,-0.46291,0.,0.46291,0.,0.,0.,0.,0.534522,0.,
+	    -0.534522,0.,0.,0.,-0.57735,0.5,0.,-0.408248,0.,0.5,0.,
+	    -0.447214,0.,0.,0.5,0.,-0.547723,0.,0.5,0.,0.365148,-0.188982,0.,
+	    -0.154303,0.,-0.188982,0.,0.,0.46291,0.,-0.58554,0.,0.46291,0.,0.,
+	    -0.547723,0.,0.547723,0.353553,0.,-0.273861,0.,0.273861,0.,
+	    -0.353553,0.,0.,-0.46291,0.,0.46291,0.,0.,0.353553,0.,-0.400892,
+	    0.,0.400892,0.,-0.353553,0.,0.447214,-0.46291,0.,0.377964,0.,
+	    -0.46291,0.25,0.,-0.188982,0.,0.179284,0.,-0.188982,0.,0.25,0.,
+	    0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
+	    0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
+	    0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
+	    0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
+	    0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
+	    -0.57735,-0.5,0.,-0.408248,0.,-0.5,0.,-0.447214,0.,0.,-0.5,0.,
+	    -0.547723,0.,-0.5,0.,0.365148,0.188982,0.,-0.154303,0.,0.188982,
+	    0.,0.,-0.46291,0.,-0.58554,0.,-0.46291,0.,0.,-0.316228,0.,0.316228,
+	    -0.612372,0.,-0.158114,0.,0.158114,0.,0.612372,0.,0.,
+	    -0.267261,0.,0.267261,0.,0.,-0.612372,0.,-0.231455,0.,
+	    0.231455,0.,0.612372,0.,0.365148,0.,0.,0.308607,0.,0.,
+	    -0.612372,0.,0.,0.,0.146385,0.,0.,0.,-0.612372,0.,0.,0.,0.,0.,0.,
+	    0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
+	    0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.447214,0.46291,0.,
+	    0.377964,0.,0.46291,0.25,0.,0.188982,0.,0.179284,0.,0.188982,0.,0.25
     };
 
     double rectArrayI[] = {
-	0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
-	0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
-	0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
-	0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
-	0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
-	0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
-	0.,0.,0.,0.,0.,0.,0.,0.,-0.707107,0.,-0.707107,0.,0.,-0.707107,0.,
-	-0.707107,0.,0.316228,0.,0.316228,0.,0.,-0.632456,0.,-0.632456,0.,
-	0.,0.,0.,0.46291,0.,0.46291,0.,0.,0.,0.,-0.534522,0.,-0.534522,0.,
-	0.,0.,0.,-0.707107,0.,0.,0.,0.707107,0.,0.,0.,0.,-0.707107,0.,0.,0.,
-	0.707107,0.,0.,0.267261,0.,0.,0.,-0.267261,0.,0.,-0.654654,0.,0.,0.,
-	0.654654,0.,0.,0.316228,0.,0.316228,-0.612372,0.,0.158114,0.,
-	0.158114,0.,-0.612372,0.,0.,0.267261,0.,0.267261,0.,0.,-0.612372,
-	0.,0.231455,0.,0.231455,0.,-0.612372,0.,0.,0.46291,0.,0.,0.,
-	-0.46291,-0.5,0.,0.188982,0.,0.,0.,-0.188982,0.,0.5,0.,0.,0.,0.,0.,
-	0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
-	0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
-	0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
-	0.547723,0.,0.547723,0.353553,0.,0.273861,0.,0.273861,0.,0.353553,
-	0.,0.,0.46291,0.,0.46291,0.,0.,0.353553,0.,0.400892,0.,0.400892,0.,
-	0.353553,0.,0.,0.46291,0.,0.,0.,-0.46291,0.5,0.,0.188982,0.,0.,0.,
-	-0.188982,0.,-0.5,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.
+	    0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
+	    0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
+	    0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
+	    0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
+	    0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
+	    0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
+	    0.,0.,0.,0.,0.,0.,0.,0.,-0.707107,0.,-0.707107,0.,0.,-0.707107,0.,
+	    -0.707107,0.,0.316228,0.,0.316228,0.,0.,-0.632456,0.,-0.632456,0.,
+	    0.,0.,0.,0.46291,0.,0.46291,0.,0.,0.,0.,-0.534522,0.,-0.534522,0.,
+	    0.,0.,0.,-0.707107,0.,0.,0.,0.707107,0.,0.,0.,0.,-0.707107,0.,0.,0.,
+	    0.707107,0.,0.,0.267261,0.,0.,0.,-0.267261,0.,0.,-0.654654,0.,0.,0.,
+	    0.654654,0.,0.,0.316228,0.,0.316228,-0.612372,0.,0.158114,0.,
+	    0.158114,0.,-0.612372,0.,0.,0.267261,0.,0.267261,0.,0.,-0.612372,
+	    0.,0.231455,0.,0.231455,0.,-0.612372,0.,0.,0.46291,0.,0.,0.,
+	    -0.46291,-0.5,0.,0.188982,0.,0.,0.,-0.188982,0.,0.5,0.,0.,0.,0.,0.,
+	    0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
+	    0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
+	    0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,
+	    0.547723,0.,0.547723,0.353553,0.,0.273861,0.,0.273861,0.,0.353553,
+	    0.,0.,0.46291,0.,0.46291,0.,0.,0.353553,0.,0.400892,0.,0.400892,0.,
+	    0.353553,0.,0.,0.46291,0.,0.,0.,-0.46291,0.5,0.,0.188982,0.,0.,0.,
+	    -0.188982,0.,-0.5,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.
     };
 
     MenuItem getMenuItem(String s) {
-	MenuItem mi = new MenuItem(s);
-	mi.addActionListener(this);
-	return mi;
+	    MenuItem mi = new MenuItem(s);
+	    mi.addActionListener(this);
+	    return mi;
     }
 
     CheckboxMenuItem getCheckItem(String s) {
-	CheckboxMenuItem mi = new CheckboxMenuItem(s);
-	mi.addItemListener(this);
-	return mi;
+	    CheckboxMenuItem mi = new CheckboxMenuItem(s);
+	    mi.addItemListener(this);
+	    return mi;
     }
 
     PhaseColor genPhaseColor(int sec, double ang) {
-	// convert to 0 .. 2*pi angle
-	ang += sec*pi/4;
-	// convert to 0 .. 6
-	ang *= 3/pi;
-	int hsec = (int) ang;
-	double a2 = ang % 1;
-	double a3 = 1.-a2;
-	PhaseColor c = null;
-	switch (hsec) {
-	case 6:
-	case 0: c = new PhaseColor(1, a2, 0); break;
-	case 1: c = new PhaseColor(a3, 1, 0); break;
-	case 2: c = new PhaseColor(0, 1, a2); break;
-	case 3: c = new PhaseColor(0, a3, 1); break;
-	case 4: c = new PhaseColor(a2, 0, 1); break;
-	case 5: c = new PhaseColor(1, 0, a3); break;
-	}
-	return c;
+	    // convert to 0 .. 2*pi angle
+	    ang += sec*pi/4;
+	    // convert to 0 .. 6
+	    ang *= 3/pi;
+	    int hsec = (int) ang;
+	    double a2 = ang % 1;
+	    double a3 = 1.-a2;
+	    PhaseColor c = null;
+	    switch (hsec) {
+	        case 6:
+	        case 0:
+                c = new PhaseColor(1, a2, 0); break;
+	        case 1:
+                c = new PhaseColor(a3, 1, 0); break;
+	        case 2:
+                c = new PhaseColor(0, 1, a2); break;
+	        case 3:
+                c = new PhaseColor(0, a3, 1); break;
+	        case 4:
+                c = new PhaseColor(a2, 0, 1); break;
+	        case 5:
+                c = new PhaseColor(1, 0, a3); break;
+	    }
+	    return c;
     }
 
     void setupSimpson() {
-	sampleCount = 9; // 15;
-	//sampleCount = sampleBar.getValue()*2+1;
-	//System.out.print("sampleCount = " + sampleCount + "\n");
+	    sampleCount = 9; // 15;
+	    //sampleCount = sampleBar.getValue()*2+1;
+	    //System.out.print("sampleCount = " + sampleCount + "\n");
 
-	// generate table of sample multipliers for efficient Simpson's rule
-	sampleMult = new int[sampleCount];
-	int i;
-	for (i = 1; i < sampleCount; i += 2) {
-	    sampleMult[i  ] = 4;
-	    sampleMult[i+1] = 2;
-	}
-	sampleMult[0] = sampleMult[sampleCount-1] = 1;
+    	// generate table of sample multipliers for efficient Simpson's rule
+    	sampleMult = new int[sampleCount];
+	    int i;
+	    for (i = 1; i < sampleCount; i += 2) {
+    	    sampleMult[i  ] = 4;
+	        sampleMult[i+1] = 2;
+	    }
+	    sampleMult[0] = sampleMult[sampleCount-1] = 1;
     }
 
     void handleResize() {
-	reinit();
+	    reinit();
     }
 
     void reinit() {
-	setResolution();
+	    setResolution();
         Dimension d = winSize = cv.getSize();
-	if (winSize.width == 0)
-	    return;
-	dbimage = createImage(d.width, d.height);
-	setupDisplay();
+    	if (winSize.width == 0)
+	        return;
+	    dbimage = createImage(d.width, d.height);
+	    setupDisplay();
     }
 
     void setupMenus() {
-	switch (viewChooser.getSelectedIndex()) {
-	case VIEW_COMPLEX:
-	    nChooser.show();
-	    lChooser.show();
-	    mChooser.show();
-	    modeChooser.hide();
-	    modeChooser.select(MODE_ANGLE);
-	    blankButton.hide();
-	    normalizeButton.hide();
-	    maximizeButton.hide();
-	    alwaysNormItem.disable();
-	    measureMenu.disable();
-	    break;
-	default:
-	    nChooser.hide();
-	    lChooser.hide();
-	    mChooser.hide();
-	    modeChooser.show();
-	    blankButton.show();
-	    normalizeButton.show();
-	    maximizeButton.show();
-	    alwaysNormItem.enable();
-	    measureMenu.enable();
-	    break;
-	}
-	switch (viewChooser.getSelectedIndex()) {
-	case VIEW_COMBO_COMP:
-	case VIEW_COMBO_RECT:
-	    presetsMenu.enable();
-	    break;
-	default:
-	    presetsMenu.disable();
-	    break;
-	}
-	validate();
+	    switch (viewChooser.getSelectedIndex()) {
+	        case VIEW_COMPLEX:
+	            nChooser.show();
+	            lChooser.show();
+	            mChooser.show();
+	            modeChooser.hide();
+	            modeChooser.select(MODE_ANGLE);
+	            blankButton.hide();
+	            normalizeButton.hide();
+	            maximizeButton.hide();
+	            alwaysNormItem.disable();
+	            measureMenu.disable();
+	            break;
+	        default:
+	            nChooser.hide();
+	            lChooser.hide();
+	            mChooser.hide();
+	            modeChooser.show();
+	            blankButton.show();
+	            normalizeButton.show();
+	            maximizeButton.show();
+	            alwaysNormItem.enable();
+	            measureMenu.enable();
+	            break;
+	    }
+	    switch (viewChooser.getSelectedIndex()) {
+	        case VIEW_COMBO_COMP:
+	        case VIEW_COMBO_RECT:
+	            presetsMenu.enable();
+	            break;
+	        default:
+	            presetsMenu.disable();
+	            break;
+	    }
+	    validate();
     }
 
     void createPhasors() {
-	phasorCount = textCount = 0;
-	int i;
-	for (i = 0; i != basisCount; i++)
-	    basisList[i].active = false;
+	    phasorCount = textCount = 0;
+	    int i;
+	    for (i = 0; i != basisCount; i++)
+    	    basisList[i].active = false;
 
-	if (viewStates == null)
-	    return;
+	    if (viewStates == null)
+    	    return;
 	
-	int sz = viewStates.height/4;
-	int x = 0;
-	int y = viewStates.y;
-	int y0 = y;
-	int nr = 0, l = 0, m = 0;
-	int sz2;
-	textBoxes = new TextBox[10];
+	    int sz = viewStates.height/4;
+	    int x = 0;
+	    int y = viewStates.y;
+	    int y0 = y;
+	    int nr = 0, l = 0, m = 0;
+	    int sz2;
+	    textBoxes = new TextBox[10];
 
-	switch (viewChooser.getSelectedIndex()) {
-	case VIEW_COMPLEX:
-	    break;
-	case VIEW_COMBO_COMP:
-	    phasorCount = 25*4;
-	    phasors = new Phasor[phasorCount];
-	    sz2 = viewStates.width / 25;
-	    if (sz > sz2)
-		sz = sz2;
-	    if (sz < 10)
-		sz = 10;
-	    for (i = 0; i != phasorCount; i++) {
-		Phasor ph = phasors[i] = new Phasor(x, y, sz, sz);
-		ph.state = getState(nr, l, m);
-		x += sz;
-		if (++m > l) {
-		    y += sz/2;
-		    l++;
-		    m = -l;
-		    if (l >= 5) {
-			x = 0;
-			y0 += sz;
-			y = y0;
-			nr++;
-			l = m = 0;
-		    }
-		}
+	    switch (viewChooser.getSelectedIndex()) {
+	        case VIEW_COMPLEX:
+	            break;
+	        case VIEW_COMBO_COMP:
+	            phasorCount = 25*4;
+	            phasors = new Phasor[phasorCount];
+	            sz2 = viewStates.width / 25;
+	            if (sz > sz2)
+		            sz = sz2;
+	            if (sz < 10)
+		            sz = 10;
+	            for (i = 0; i != phasorCount; i++) {
+		            Phasor ph = phasors[i] = new Phasor(x, y, sz, sz);
+		            ph.state = getState(nr, l, m);
+		            x += sz;
+		            if (++m > l) {
+		                y += sz/2;
+		                l++;
+		                m = -l;
+		                if (l >= 5) {
+			                x = 0;
+			                y0 += sz;
+			                y = y0;
+			                nr++;
+			                l = m = 0;
+		                }
+		            }
+	            }
+	            break;
+	        case VIEW_COMBO_RECT:
+	            sz = viewStates.height/5;
+	            phasorCount = rectBasis.altStateCount;
+	            phasors = new Phasor[phasorCount];
+	            i = 0;
+	            for (m = 0; m != 5; m++) {
+		            i = createRectPhasors(x, y, sz, i, 5-m);
+		            x += (5-m)*sz + sz/2;
+	            }
+	            break;
+	        case VIEW_COMBO_N1:
+	            phasorCount = 12;
+	            phasors = new Phasor[phasorCount];
+	            i = 0;
+	            i = createBasisPhasors(x, y, sz, i, 0, 1);
+	            createText("Lz", x+sz*3, y, sz);
+	            y += sz;
+	            i = createAltPhasors(x, y, sz, i, lxBasis, 3, 1);
+	            createText("Lx", x+sz*3, y, sz);
+	            y += sz;
+	            i = createAltPhasors(x, y, sz, i, lyBasis, 3, 1);
+	            createText("Ly", x+sz*3, y, sz);
+	            y += sz;
+	            i = createRectPhasorsN(x, y, sz, i, rectBasis, 1);
+	            createText("Rect", x+sz*3, y, sz);
+	            break;
+	        case VIEW_COMBO_N2:
+	            phasorCount = 6*4;
+	            phasors = new Phasor[phasorCount];
+	            i = 0;
+	            i = createBasisPhasors(x, y, sz, i, 1, 0);
+	            i = createBasisPhasors(x+sz*2, y, sz, i, 0, 2);
+	            createText("Lz", x+sz*7, y, sz);
+	            y += sz;
+	            i = createAltPhasors(x, y, sz, i, lxBasis, 1, 25);
+	            i = createAltPhasors(x+sz*2, y, sz, i, lxBasis, 5, 4);
+	            createText("Lx", x+sz*7, y, sz);
+	            y += sz;
+	            i = createAltPhasors(x, y, sz, i, lyBasis, 1, 25);
+	            i = createAltPhasors(x+sz*2, y, sz, i, lyBasis, 5, 4);
+	            createText("Ly", x+sz*7, y, sz);
+	            y += sz;
+	            i = createRectPhasorsN(x, y, sz, i, rectBasis, 2);
+	            createText("Rect", x+sz*7, y, sz);
+	            break;
+	        case VIEW_COMBO_N3:
+	            phasorCount = 10*4;
+	            phasors = new Phasor[phasorCount];
+	            i = 0;
+	            i = createBasisPhasors(x, y, sz, i, 1, 1);
+	            i = createBasisPhasors(x+sz*4, y, sz, i, 0, 3);
+	            createText("Lz", x+sz*12, y, sz);
+	            y += sz;
+	            i = createAltPhasors(x, y, sz, i, lxBasis, 3, 26);
+	            i = createAltPhasors(x+sz*4, y, sz, i, lxBasis, 7, 9);
+	            createText("Lx", x+sz*12, y, sz);
+	            y += sz;
+	            i = createAltPhasors(x, y, sz, i, lyBasis, 3, 26);
+	            i = createAltPhasors(x+sz*4, y, sz, i, lyBasis, 7, 9);
+	            createText("Ly", x+sz*12, y, sz);
+	            y += sz;
+	            i = createRectPhasorsN(x, y, sz, i, rectBasis, 3);
+	            createText("Rect", x+sz*12, y, sz);
+	            break;
+	        case VIEW_COMBO_N4:
+	            phasorCount = 15*4;
+	            phasors = new Phasor[phasorCount];
+	            i = 0;
+	            i = createBasisPhasors(x, y, sz, i, 2, 0);
+	            i = createBasisPhasors(x+sz*2, y, sz, i, 1, 2);
+	            i = createBasisPhasors(x+sz*8, y, sz, i, 0, 4);
+	            createText("Lz", x+sz*17, y, sz);
+	            y += sz;
+	            i = createAltPhasors(x, y, sz, i, lxBasis, 1, 34);
+	            i = createAltPhasors(x+sz*2, y, sz, i, lxBasis, 5, 29);
+	            i = createAltPhasors(x+sz*8, y, sz, i, lxBasis, 9, 16);
+	            createText("Lx", x+sz*17, y, sz);
+	            y += sz;
+	            i = createAltPhasors(x, y, sz, i, lyBasis, 1, 34);
+	            i = createAltPhasors(x+sz*2, y, sz, i, lyBasis, 5, 29);
+	            i = createAltPhasors(x+sz*8, y, sz, i, lyBasis, 9, 16);
+	            createText("Ly", x+sz*17, y, sz);
+	            y += sz;
+	            i = createRectPhasorsN(x, y, sz, i, rectBasis, 4);
+	            createText("Rect", x+sz*17, y, sz);
+	            break;
 	    }
-	    break;
-	case VIEW_COMBO_RECT:
-	    sz = viewStates.height/5;
-	    phasorCount = rectBasis.altStateCount;
-	    phasors = new Phasor[phasorCount];
-	    i = 0;
-	    for (m = 0; m != 5; m++) {
-		i = createRectPhasors(x, y, sz, i, 5-m);
-		x += (5-m)*sz + sz/2;
+	    for (i = 0; i != phasorCount; i++)
+	        phasors[i].state.setBasisActive();
+	    for (i = 0; i != basisCount; i++) {
+    	    if (basisList[i].active) {
+		    // this clears out any states which do not have phasors present
+		        basisList[i].convertBasisToDerived();
+		        basisList[i].convertDerivedToBasis();
+	        }
 	    }
-	    break;
-	case VIEW_COMBO_N1:
-	    phasorCount = 12;
-	    phasors = new Phasor[phasorCount];
-	    i = 0;
-	    i = createBasisPhasors(x, y, sz, i, 0, 1);
-	    createText("Lz", x+sz*3, y, sz);
-	    y += sz;
-	    i = createAltPhasors(x, y, sz, i, lxBasis, 3, 1);
-	    createText("Lx", x+sz*3, y, sz);
-	    y += sz;
-	    i = createAltPhasors(x, y, sz, i, lyBasis, 3, 1);
-	    createText("Ly", x+sz*3, y, sz);
-	    y += sz;
-	    i = createRectPhasorsN(x, y, sz, i, rectBasis, 1);
-	    createText("Rect", x+sz*3, y, sz);
-	    break;
-	case VIEW_COMBO_N2:
-	    phasorCount = 6*4;
-	    phasors = new Phasor[phasorCount];
-	    i = 0;
-	    i = createBasisPhasors(x, y, sz, i, 1, 0);
-	    i = createBasisPhasors(x+sz*2, y, sz, i, 0, 2);
-	    createText("Lz", x+sz*7, y, sz);
-	    y += sz;
-	    i = createAltPhasors(x, y, sz, i, lxBasis, 1, 25);
-	    i = createAltPhasors(x+sz*2, y, sz, i, lxBasis, 5, 4);
-	    createText("Lx", x+sz*7, y, sz);
-	    y += sz;
-	    i = createAltPhasors(x, y, sz, i, lyBasis, 1, 25);
-	    i = createAltPhasors(x+sz*2, y, sz, i, lyBasis, 5, 4);
-	    createText("Ly", x+sz*7, y, sz);
-	    y += sz;
-	    i = createRectPhasorsN(x, y, sz, i, rectBasis, 2);
-	    createText("Rect", x+sz*7, y, sz);
-	    break;
-	case VIEW_COMBO_N3:
-	    phasorCount = 10*4;
-	    phasors = new Phasor[phasorCount];
-	    i = 0;
-	    i = createBasisPhasors(x, y, sz, i, 1, 1);
-	    i = createBasisPhasors(x+sz*4, y, sz, i, 0, 3);
-	    createText("Lz", x+sz*12, y, sz);
-	    y += sz;
-	    i = createAltPhasors(x, y, sz, i, lxBasis, 3, 26);
-	    i = createAltPhasors(x+sz*4, y, sz, i, lxBasis, 7, 9);
-	    createText("Lx", x+sz*12, y, sz);
-	    y += sz;
-	    i = createAltPhasors(x, y, sz, i, lyBasis, 3, 26);
-	    i = createAltPhasors(x+sz*4, y, sz, i, lyBasis, 7, 9);
-	    createText("Ly", x+sz*12, y, sz);
-	    y += sz;
-	    i = createRectPhasorsN(x, y, sz, i, rectBasis, 3);
-	    createText("Rect", x+sz*12, y, sz);
-	    break;
-	case VIEW_COMBO_N4:
-	    phasorCount = 15*4;
-	    phasors = new Phasor[phasorCount];
-	    i = 0;
-	    i = createBasisPhasors(x, y, sz, i, 2, 0);
-	    i = createBasisPhasors(x+sz*2, y, sz, i, 1, 2);
-	    i = createBasisPhasors(x+sz*8, y, sz, i, 0, 4);
-	    createText("Lz", x+sz*17, y, sz);
-	    y += sz;
-	    i = createAltPhasors(x, y, sz, i, lxBasis, 1, 34);
-	    i = createAltPhasors(x+sz*2, y, sz, i, lxBasis, 5, 29);
-	    i = createAltPhasors(x+sz*8, y, sz, i, lxBasis, 9, 16);
-	    createText("Lx", x+sz*17, y, sz);
-	    y += sz;
-	    i = createAltPhasors(x, y, sz, i, lyBasis, 1, 34);
-	    i = createAltPhasors(x+sz*2, y, sz, i, lyBasis, 5, 29);
-	    i = createAltPhasors(x+sz*8, y, sz, i, lyBasis, 9, 16);
-	    createText("Ly", x+sz*17, y, sz);
-	    y += sz;
-	    i = createRectPhasorsN(x, y, sz, i, rectBasis, 4);
-	    createText("Rect", x+sz*17, y, sz);
-	    break;
-	}
-	for (i = 0; i != phasorCount; i++)
-	    phasors[i].state.setBasisActive();
-	for (i = 0; i != basisCount; i++) {
-	    if (basisList[i].active) {
-		// this clears out any states which do not have phasors present
-		basisList[i].convertBasisToDerived();
-		basisList[i].convertDerivedToBasis();
-	    }
-	}
 
-	// and if we're viewing Complex Combos, we need an extra step
-	// to clear out any states with phasors not present.  All other
-	// views are handled by the previous loop.
-	if (viewChooser.getSelectedIndex() == VIEW_COMBO_COMP)
-	    for (i = 0; i != stateCount; i++)
-		if (states[i].nr >= 4 || states[i].l >= 5)
-		    states[i].set(0);
+	    // and if we're viewing Complex Combos, we need an extra step
+	    // to clear out any states with phasors not present.  All other
+	    // views are handled by the previous loop.
+	    if (viewChooser.getSelectedIndex() == VIEW_COMBO_COMP)
+    	    for (i = 0; i != stateCount; i++)
+		        if (states[i].nr >= 4 || states[i].l >= 5)
+	                states[i].set(0);
 
-	// in case the states changed
-	createOrbitals();
+	    // in case the states changed
+	    createOrbitals();
     }
 
     boolean higherStatesPresent() {
-	int i;
-	for (i = 0; i != stateCount; i++)
-	    if (states[i].n > 4 && states[i].mag > 0)
-		return true;
-	return false;
+	    int i;
+	    for (i = 0; i != stateCount; i++)
+    	    if (states[i].n > 4 && states[i].mag > 0)
+		        return true;
+        return false;
     }
 
     void setInitialOrbital() {
-	if (phasorCount == 0)
-	    return;
-	int i;
-	for (i = 0; i != phasorCount; i++)
-	    if (phasors[i].state.mag > 0)
-		return;
+	    if (phasorCount == 0)
+    	    return;
+	    int i;
+        for (i = 0; i != phasorCount; i++)
+    	    if (phasors[i].state.mag > 0)
+		        return;
 
-	doClear();
+	    doClear();
 
-	// no states active, so pick a phasor and select it.
-	phasors[0].state.set(1);
-	createOrbitals();
+	    // no states active, so pick a phasor and select it.
+	    phasors[0].state.set(1);
+	    createOrbitals();
     }
 
     int createBasisPhasors(int x, int y, int sz, int i, int nr, int l) {
-	int j;
-	for (j = 0; j != l*2+1; j++) {
-	    Phasor ph = phasors[i] = new Phasor(x, y, sz, sz);
-	    ph.state = getState(nr, l, j-l);
-	    x += sz;
-	    i++;
-	}
-	return i;
+	    int j;
+	    for (j = 0; j != l*2+1; j++) {
+    	    Phasor ph = phasors[i] = new Phasor(x, y, sz, sz);
+	        ph.state = getState(nr, l, j-l);
+	        x += sz;
+	        i++;
+	    }
+	    return i;
     }
 
     int createAltPhasors(int x, int y, int sz, int i, AlternateBasis basis,
 			 int ct, int offset) {
-	int j;
-	for (j = 0; j != ct; j++) {
-	    Phasor ph = phasors[i] = new Phasor(x, y, sz, sz);
-	    ph.state = basis.altStates[j+offset];
-	    x += sz;
-	    i++;
-	}
-	return i;
+	    int j;
+	    for (j = 0; j != ct; j++) {
+    	    Phasor ph = phasors[i] = new Phasor(x, y, sz, sz);
+	        ph.state = basis.altStates[j+offset];
+	        x += sz;
+	        i++;
+	    }
+	    return i;
     }
 
-    int createRectPhasorsN(int x, int y, int sz, int i, AlternateBasis basis,
-			   int n) {
-	int j;
-	for (j = 0; j != basis.altStateCount; j++) {
-	    DerivedState ds = basis.altStates[j];
-	    if (ds.nx+ds.ny+ds.nz != n)
-		continue;
-	    Phasor ph = phasors[i] = new Phasor(x, y, sz, sz);
-	    ph.state = basis.altStates[j];
-	    x += sz;
-	    i++;
-	}
-	return i;
+    int createRectPhasorsN(int x, int y, int sz, int i, AlternateBasis basis, int n) {
+	    int j;
+	    for (j = 0; j != basis.altStateCount; j++) {
+    	    DerivedState ds = basis.altStates[j];
+	        if (ds.nx+ds.ny+ds.nz != n)
+		        continue;
+	        Phasor ph = phasors[i] = new Phasor(x, y, sz, sz);
+	        ph.state = basis.altStates[j];
+	        x += sz;
+	        i++;
+	    }
+	    return i;
     }
 
     int createRectPhasors(int x, int y, int sz, int i, int nz) {
-	while (nz > 0) {
-	    i = createAltPhasors(x, y, sz, i, rectBasis, nz, i);
-	    y += sz;
-	    nz--;
-	}
-	return i;
+	    while (nz > 0) {
+	        i = createAltPhasors(x, y, sz, i, rectBasis, nz, i);
+	        y += sz;
+	        nz--;
+	    }
+	    return i;
     }
 
     void createText(String text, int x, int y, int sz) {
-	TextBox tb = new TextBox(x+10, y, winSize.width-x, sz, text);
-	textBoxes[textCount++] = tb;
+	    TextBox tb = new TextBox(x+10, y, winSize.width-x, sz, text);
+	    textBoxes[textCount++] = tb;
     }
 
     void setupDisplay() {
-	if (winSize == null)
-	    return;
-	int potsize = (viewPotential == null) ? 50 : viewPotential.height;
-	int statesize = (viewStates == null) ? 64 : viewStates.height;
-	viewX = viewPotential = viewL = viewStates = null;
-	viewList = new View[10];
-	int i = 0;
-	if (eCheckItem.getState())
+	    if (winSize == null)
+	        return;
+	    int potsize = (viewPotential == null) ? 50 : viewPotential.height;
+	    int statesize = (viewStates == null) ? 64 : viewStates.height;
+	    viewX = viewPotential = viewL = viewStates = null;
+	    viewList = new View[10];
+	    int i = 0;
+	    if (eCheckItem.getState())
 	    viewList[i++] = viewPotential = new View();
-	if (xCheckItem.getState())
-	    viewList[i++] = viewX = new View();
-	if (lCheckItem.getState())
-	    viewList[i++] = viewL = new View();
-	if (viewChooser.getSelectedIndex() > VIEW_COMPLEX)
-	    viewList[i++] = viewStates = new View();
-	viewCount = i;
-	int sizenum = viewCount;
-	int toth = winSize.height;
+	    if (xCheckItem.getState())
+	        viewList[i++] = viewX = new View();
+	    if (lCheckItem.getState())
+    	    viewList[i++] = viewL = new View();
+	    if (viewChooser.getSelectedIndex() > VIEW_COMPLEX)
+    	    viewList[i++] = viewStates = new View();
+	    viewCount = i;
+	    int sizenum = viewCount;
+	    int toth = winSize.height;
 
-	// preserve size of potential and state panes if possible
-	if (potsize > 0 && viewPotential != null) {
-	    sizenum--;
-	    toth -= potsize;
-	}
-	if (statesize > 0 && viewStates != null) {
-	    sizenum--;
-	    toth -= statesize;
-	}
-	toth -= panePad*2*(viewCount-1);
-	int cury = 0;
-	for (i = 0; i != viewCount; i++) {
-	    View v = viewList[i];
-	    int h = (sizenum == 0) ? toth : toth/sizenum;
-	    if (v == viewPotential && potsize > 0)
-		h = potsize;
-	    else if (v == viewStates && statesize > 0)
-		h = statesize;
-	    v.paneY = cury;
-	    if (cury > 0)
-		cury += panePad;
-	    v.x = 0;
-	    v.width = winSize.width;
-	    v.y = cury;
-	    v.height = h;
-	    cury += h+panePad;
-	}
-	setSubViews();
+    	// preserve size of potential and state panes if possible
+	    if (potsize > 0 && viewPotential != null) {
+	        sizenum--;
+	        toth -= potsize;
+	    }
+	    if (statesize > 0 && viewStates != null) {
+	        sizenum--;
+	        toth -= statesize;
+	    }
+	    toth -= panePad*2*(viewCount-1);
+	    int cury = 0;
+	    for (i = 0; i != viewCount; i++) {
+    	    View v = viewList[i];
+	        int h = (sizenum == 0) ? toth : toth/sizenum;
+	        if (v == viewPotential && potsize > 0)
+		        h = potsize;
+	        else if (v == viewStates && statesize > 0)
+		        h = statesize;
+	        v.paneY = cury;
+	        if (cury > 0)
+		        cury += panePad;
+	        v.x = 0;
+	        v.width = winSize.width;
+	        v.y = cury;
+	        v.height = h;
+	        cury += h+panePad;
+	    }
+	    setSubViews();
     }
 
     void setSubViews() {
-	int i;
-	pixels = new int[viewX.width*viewX.height];
-	for (i = 0; i != viewX.width*viewX.height; i++)
-	    pixels[i] = 0xFF000000;
-	imageSource = new MemoryImageSource(viewX.width, viewX.height,
-					    pixels, 0, viewX.width);
+	    int i;
+	    pixels = new int[viewX.width*viewX.height];
+	    for (i = 0; i != viewX.width*viewX.height; i++)
+	        pixels[i] = 0xFF000000;
+	    imageSource = new MemoryImageSource(viewX.width, viewX.height, pixels, 0, viewX.width);
 
-	int asize = (int) (min(viewX.width, viewX.height)/3);
-	viewAxes = new Rectangle(viewX.x+winSize.width-asize, viewX.y,
-				 asize, asize);
+	    int asize = (int) (min(viewX.width, viewX.height)/3);
+	    viewAxes = new Rectangle(viewX.x+winSize.width-asize, viewX.y, asize, asize);
 
-	setupMenus();
-	createPhasors();
+	    setupMenus();
+	    createPhasors();
     }
 
     int getTermWidth() {
-	return 8;
+	    return 8;
     }
 
     // multiply rotation matrix by rotations through angle1 and angle2
