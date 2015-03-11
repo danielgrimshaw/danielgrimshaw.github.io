@@ -24,6 +24,7 @@ class QuantumOsc3dCanvas extends Canvas {
     QuantumOsc3dCanvas(QuantumOsc3dFrame p) {
 	    pg = p;
     }
+    
     public Dimension getPreferredSize() {
 	    return new Dimension(300,400);
     }
@@ -45,11 +46,14 @@ class QuantumOsc3dLayout implements LayoutManager {
     public Dimension preferredLayoutSize(Container target) {
 	    return new Dimension(500, 500);
     }
+    
     public Dimension minimumLayoutSize(Container target) {
 	    return new Dimension(100,100);
     }
+    
     public void layoutContainer(Container target) {
 	    int barwidth = 0;
+	    
 	    int i;
 	    for (i = 1; i < target.getComponentCount(); i++) {
 	        Component m = target.getComponent(i);
@@ -59,14 +63,17 @@ class QuantumOsc3dLayout implements LayoutManager {
 	    	        barwidth = d.width;
 	        }
 	    }
+	    
 	    Insets insets = target.insets();
 	    int targetw = target.size().width - insets.left - insets.right;
 	    int cw = targetw-barwidth;
 	    int targeth = target.size().height - (insets.top+insets.bottom);
+	    
 	    target.getComponent(0).move(insets.left, insets.top);
 	    target.getComponent(0).resize(cw, targeth);
 	    cw += insets.left;
 	    int h = insets.top;
+	    
 	    for (i = 1; i < target.getComponentCount(); i++) {
 	        Component m = target.getComponent(i);
 	        if (m.isVisible()) {
@@ -87,6 +94,7 @@ class QuantumOsc3dLayout implements LayoutManager {
 
 public class QuantumOsc3d extends Applet {
     QuantumOsc3dFrame oc;
+    
     void destroyFrame() {
 	    if (oc != null) 
 	        oc.dispose();
@@ -487,6 +495,7 @@ class QuantumOsc3dFrame extends Frame
 	    setupLBasis(lxBasis, 1, 1, true, l1xArray);
 	    setupLBasis(lxBasis, 1, 2, true, l2xArray);
 	    setupLBasis(lxBasis, 2, 0, true, l0Array);
+	    
 	    lyBasis = initBasis(35, true);
 	    setupLBasis(lyBasis, 0, 0, false, l0Array);
 	    setupLBasis(lyBasis, 0, 1, false, l1yArray);
@@ -546,6 +555,7 @@ class QuantumOsc3dFrame extends Frame
 	    int i;
 	    int nx = 0, ny = 0, nz = 0;
 	    int ap = 0;
+	    
 	    for (i = 0; i != sct; i++) {
 	        int n = nx+ny+nz;
 	        int n21 = n/2+1;
@@ -561,6 +571,7 @@ class QuantumOsc3dFrame extends Frame
 	        ds.nx = nx; ds.ny = ny; ds.nz = nz;
 	        ds.n = n;
 	        ds.elevel = 2*nr+l+1.5;
+	        
 	        int j;
 	        for (j = 0; j != ds.count; j++) {
 		        ds.bstates[j] = getState(nr, l, m);
@@ -1104,6 +1115,7 @@ class QuantumOsc3dFrame extends Frame
 	        toth -= statesize;
 	    }
 	    toth -= panePad*2*(viewCount-1);
+	    
 	    int cury = 0;
 	    for (i = 0; i != viewCount; i++) {
     	    View v = viewList[i];
@@ -1144,53 +1156,53 @@ class QuantumOsc3dFrame extends Frame
 
     // multiply rotation matrix by rotations through angle1 and angle2
     void rotate(double angle1, double angle2) {
-	double r1cos = java.lang.Math.cos(angle1);
-	double r1sin = java.lang.Math.sin(angle1);
-	double r2cos = java.lang.Math.cos(angle2);
-	double r2sin = java.lang.Math.sin(angle2);
-	double rotm2[] = new double[9];
+	    double r1cos = java.lang.Math.cos(angle1);
+	    double r1sin = java.lang.Math.sin(angle1);
+	    double r2cos = java.lang.Math.cos(angle2);
+	    double r2sin = java.lang.Math.sin(angle2);
+	    double rotm2[] = new double[9];
 
-	// angle1 is angle about y axis, angle2 is angle about x axis
-	rotm2[0] = r1cos;
-	rotm2[1] = -r1sin*r2sin;
-	rotm2[2] = r2cos*r1sin;
+	    // angle1 is angle about y axis, angle2 is angle about x axis
+	    rotm2[0] = r1cos;
+	    rotm2[1] = -r1sin*r2sin;
+	    rotm2[2] = r2cos*r1sin;
 
-	rotm2[3] = 0;
-	rotm2[4] = r2cos;
-	rotm2[5] = r2sin;
+	    rotm2[3] = 0;
+	    rotm2[4] = r2cos;
+	    rotm2[5] = r2sin;
 
-	rotm2[6] = -r1sin;
-	rotm2[7] = -r1cos*r2sin;
-	rotm2[8] = r1cos*r2cos;
+	    rotm2[6] = -r1sin;
+	    rotm2[7] = -r1cos*r2sin;
+	    rotm2[8] = r1cos*r2cos;
 
-	double rotm1[] = rotmatrix;
-	rotmatrix = new double[9];
+	    double rotm1[] = rotmatrix;
+	    rotmatrix = new double[9];
 
-	int i, j, k;
-	for (j = 0; j != 3; j++)
-	    for (i = 0; i != 3; i++) {
-		double v = 0;
-		for (k = 0; k != 3; k++)
-		    v += rotm1[k+j*3]*rotm2[i+k*3];
-		rotmatrix[i+j*3] = v;
-	    }
+	    int i, j, k;
+	    for (j = 0; j != 3; j++)
+	        for (i = 0; i != 3; i++) {
+		        double v = 0;
+		        for (k = 0; k != 3; k++)
+		            v += rotm1[k+j*3]*rotm2[i+k*3];
+		        rotmatrix[i+j*3] = v;
+	        }
     }
 
     double max(double a, double b) { return a > b ? a : b; }
     double min(double a, double b) { return a < b ? a : b; }
 
     void setResolution() {
-	int og = gridSizeX;
-	gridSizeX = gridSizeY = (resolutionBar.getValue() & ~1);
-	if (og == gridSizeX)
-	    return;
-	dataSize = gridSizeX*4; // (internalResBar.getValue() & ~1);
-	System.out.print("setResolution " + dataSize + " " +
+	    int og = gridSizeX;
+	    gridSizeX = gridSizeY = (resolutionBar.getValue() & ~1);
+	    if (og == gridSizeX)
+	        return;
+	    dataSize = gridSizeX*4; // (internalResBar.getValue() & ~1);
+	    System.out.print("setResolution " + dataSize + " " +
 			 gridSizeX + "\n");
-	// was 50
-	resadj = 50./dataSize;
-	precomputeAll();
-	func = new double[gridSizeX][gridSizeY][3];
+	    // was 50
+	    resadj = 50./dataSize;
+	    precomputeAll();
+	    func = new double[gridSizeX][gridSizeY][3];
     }
 
     int getNR() { return nChooser.getSelectedIndex(); }
@@ -1198,17 +1210,16 @@ class QuantumOsc3dFrame extends Frame
     int getM() { return mChooser.getSelectedIndex() - getL(); }
 
     String codeLetter[] = {
-	"s", "p", "d", "f", "g", "h"
-    };
+	    "s", "p", "d", "f", "g", "h"};
 
     void setLValue() {
-	int l = getL();
-	int i;
-	mChooser.removeAll();
-	for (i = -l; i <= l; i++)
-	    mChooser.add("m = " + i);
-	mChooser.select(l);
-	validate();
+	    int l = getL();
+	    int i;
+	    mChooser.removeAll();
+	    for (i = -l; i <= l; i++)
+    	    mChooser.add("m = " + i);
+	    mChooser.select(l);
+	    validate();
     }
 
     // compute func[][][] array (2-d view) by raytracing through a
