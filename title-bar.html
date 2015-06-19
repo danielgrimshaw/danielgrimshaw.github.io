@@ -1,0 +1,36 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="pages-bar.html">
+
+<dom-module id="title-bar">
+    <style>
+	div {
+	    background-color: light-green;
+	    background-size: cover;
+	    margin: 0px, 0px, 0px, 0px;
+	    position: relative;
+	    display: block;
+	}
+
+	h1 {
+    	    font-size: 50px;
+	    font-family: Arial;
+	    display: inline-block;
+	}
+    </style>
+
+    <template>
+        <div>
+    	    <h1>{{text}}</h1>
+	    <pages-bar></pages-bar>
+	</div>
+    </template>
+
+    <script>
+        Polymer({
+	    is: "title-bar",
+	    ready: function() {
+		this.text = "Daniel Grimshaw";
+	    }
+        });
+    </script>
+</dom-module>
